@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:pokedex/helpers/getColorPokemon.dart';
+import 'package:pokedex/models/pokemon.dart';
 
 class CardPokemon extends StatelessWidget {
-  const CardPokemon({
-    Key? key,
-    required this.name, required this.frontDefault, required this.type1, required this.type2,
+  const CardPokemon({Key? key, required this.pokemon}) : super(key: key);
 
-  }) : super(key: key);
-
-  final String name;
-  final String frontDefault;
-  final String type1;
-  final String ? type2;
-  
+  final Pokemon pokemon;
 
   @override
   Widget build(BuildContext context) {
@@ -20,73 +14,54 @@ class CardPokemon extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       child: Card(
-        child: SizedBox(
-          height: size.height * 0.3,
-          // color: Colors.red,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        color: getColorPokemon(pokemon.types[0].type.name),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            // crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              //Image Rockets
-              Column(
+              Hero(
+                
+                tag: pokemon.name,
+                child: FadeInImage(
+                  width: size.width * 0.3,
+                  fit: BoxFit.cover,
+                  placeholder: const AssetImage("assets/jar-loading.gif"),
+                  image: NetworkImage(pokemon.sprites.frontDefault),
+                ),
+              ),
+              Text(
+                pokemon.name[0].toUpperCase() + pokemon.name.substring(1).toLowerCase(),
+                style: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: FadeInImage(
-                      width: size.width * 0.28,
-                      fit: BoxFit.cover,
-                      placeholder: const AssetImage("assets/jar-loading.gif"),
-                      image: NetworkImage(frontDefault),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
+                    child: Text(
+                      pokemon.types[0].type.name,
+                      style: const TextStyle(color: Colors.white),
                     ),
-                  )
+                  ),
+                  const SizedBox(width: 10),
+                  pokemon.types.length > 1 ? 
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
+                    child: Text(
+                      pokemon.types[1].type.name ,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ): Container(),
                 ],
-              ),
-
-              SizedBox(
-                width: size.width * 0.6,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            name,
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          type1,
-                          style: const TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            type2?? "",
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                  ],
-                ),
               ),
             ],
           ),

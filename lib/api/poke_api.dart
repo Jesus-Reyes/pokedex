@@ -14,7 +14,7 @@ class PokeApi {
   final dio = Dio();
 
   Future<List<Pokemon>> getPokemons() async {
-    final response = await dio.get(baseUrl + '?limit=100');
+    final response = await dio.get(baseUrl + '?limit=20');
     final pokemonsList = PokemonList.fromMap(response.data);
 
     final responses = await Future.wait(pokemonsList.results.map((poke) => dio.get(baseUrl + '/${poke.name}')).toList());

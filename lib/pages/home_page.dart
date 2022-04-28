@@ -12,44 +12,61 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final poke = PokeApi();
     final pokeStream = PokemonsStream();
+    final size = MediaQuery.of(context).size;
+    final _space = (size.height > 600) ? 0 : 6.5;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text("POkedex")),
-      body: StreamBuilder<List<Pokemon>>(
-        stream: pokeStream.streamPokemons.stream,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return FutureBuilder<List<Pokemon>>(
-              future: poke.getPokemons(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.red,
-                    ),
-                  );
-                }
-                final pokemons = snapshot.data!;
-                pokeStream.streamPokemons.add(pokemons);
-                return Container();
-              },
-            );
-          }
-          final pokemons = snapshot.data!;
-          return ListView.builder(
-            // itemCount: pokemonsList.results.length,
-            itemCount: 21,
-            itemBuilder: (context, index) {
-              final pokemon = pokemons[index];
-              return CardPokemon(
-                name: pokemon.name,
-                frontDefault: pokemon.sprites.frontDefault,
-                type1: pokemon.types[0].type.name,
-                type2: pokemon.types.length > 1 ? pokemon.types[0].type.name : null,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade100,
+        appBar: AppBar(
+          title: const Text(
+            "Pokedex",
+            style: TextStyle(color: Colors.black, fontSize: 25, fontWeight: FontWeight.bold),
+          ),
+          // centerTitle: true,
+          // backgroundColor: Colors.transparent,
+          // elevation: 0.0,
+        ),
+        extendBodyBehindAppBar: true,
+        body: StreamBuilder<List<Pokemon>>(
+          stream: pokeStream.streamPokemons.stream,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return FutureBuilder<List<Pokemon>>(
+                future: poke.getPokemons(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.red,
+                      ),
+                    );
+                  }
+                  final pokemons = snapshot.data!;
+                  pokeStream.streamPokemons.add(pokemons);
+                  return Container();
+                },
               );
-            },
-          );
-        },
+            }
+            final pokemons = snapshot.data!;
+            return GridView.count(
+              // itemCount: pokemonsList.results.length,
+              scrollDirection: Axis.vertical,
+              crossAxisCount: 2,
+
+              childAspectRatio: (size.width / (size.height - kToolbarHeight * _space * 0.5)),
+              crossAxisSpacing: 0,
+              children: pokemons.map((pokemon) {
+                return GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, 'pokemon', arguments: pokemon),
+                  child: CardPokemon(
+                    pokemon: pokemon,
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        ),
       ),
     );
   }
