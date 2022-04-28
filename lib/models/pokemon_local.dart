@@ -1,9 +1,7 @@
 import 'dart:convert';
 
-import 'dart:typed_data';
-
-class Pokemon {
-    Pokemon({
+class PokemonLocal {
+    PokemonLocal({
         required this.abilities,
         required this.gameIndices,
         required this.height,
@@ -13,7 +11,6 @@ class Pokemon {
         required this.stats,
         required this.types,
         required this.weight,
-        required this.imgLocal,
     });
 
     final List<AbilityElement> abilities;
@@ -25,9 +22,8 @@ class Pokemon {
     final List<Stat> stats;
     final List<Type> types;
     final int weight;
-    final Uint8List imgLocal;
 
-    Pokemon copyWith({
+    PokemonLocal copyWith({
         List<AbilityElement> ? abilities,
         List<GameIndex> ? gameIndices,
         int ? height,
@@ -37,9 +33,8 @@ class Pokemon {
         List<Stat> ? stats,
         List<Type> ? types,
         int ? weight,
-        final Uint8List ? imgLocal
     }) => 
-        Pokemon(
+        PokemonLocal(
             abilities: abilities ?? this.abilities,
             gameIndices: gameIndices ?? this.gameIndices,
             height: height ?? this.height,
@@ -48,16 +43,14 @@ class Pokemon {
             sprites: sprites ?? this.sprites,
             stats: stats ?? this.stats,
             types: types ?? this.types,
-            weight: weight ?? this.weight, 
-            imgLocal: imgLocal?? this.imgLocal,
-            
+            weight: weight ?? this.weight,
         );
 
-    factory Pokemon.fromJson(String str) => Pokemon.fromMap(json.decode(str));
+    factory PokemonLocal.fromJson(String str) => PokemonLocal.fromMap(json.decode(str));
 
     String toJson() => json.encode(toMap());
 
-    factory Pokemon.fromMap(Map<String, dynamic> json) => Pokemon(
+    factory PokemonLocal.fromMap(Map<String, dynamic> json) => PokemonLocal(
         abilities: List<AbilityElement>.from(json["abilities"].map((x) => AbilityElement.fromMap(x))),
         gameIndices: List<GameIndex>.from(json["game_indices"].map((x) => GameIndex.fromMap(x))),
         height: json["height"],
@@ -66,8 +59,7 @@ class Pokemon {
         sprites: Sprites.fromMap(json["sprites"]),
         stats: List<Stat>.from(json["stats"].map((x) => Stat.fromMap(x))),
         types: List<Type>.from(json["types"].map((x) => Type.fromMap(x))),
-        weight: json["weight"], 
-        imgLocal: json["imgLocal"],
+        weight: json["weight"],
     );
 
     Map<String, dynamic> toMap() => {

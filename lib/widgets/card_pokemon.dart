@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex/helpers/getColorPokemon.dart';
 import 'package:pokedex/models/pokemon.dart';
 
@@ -28,11 +29,18 @@ class CardPokemon extends StatelessWidget {
               Hero(
                 
                 tag: pokemon.name,
-                child: FadeInImage(
-                  width: size.width * 0.3,
+                // child: FadeInImage(
+                //   width: size.width * 0.3,
+                //   fit: BoxFit.cover,
+                //   placeholder: const AssetImage("assets/jar-loading.gif"),
+                //   image: NetworkImage(pokemon.sprites.frontDefault),
+                // ),
+                child: SvgPicture.network(
+                  pokemon.sprites.other.dreamWorld.frontDefault,
+                  semanticsLabel: pokemon.name,
                   fit: BoxFit.cover,
-                  placeholder: const AssetImage("assets/jar-loading.gif"),
-                  image: NetworkImage(pokemon.sprites.frontDefault),
+                  height: size.height * 0.15,
+                  placeholderBuilder: (_) => const Image(image: AssetImage("assets/jar-loading.gif")),
                 ),
               ),
               Text(
