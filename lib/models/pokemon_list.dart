@@ -1,8 +1,3 @@
-// To parse this JSON data, do
-//
-//     final pokemonList = pokemonListFromMap(jsonString);
-
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 class PokemonList {
