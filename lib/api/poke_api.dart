@@ -17,7 +17,7 @@ class PokeApi {
   final pokemonStream = PokemonsStream();
   final baseUrl = 'https://pokeapi.co/api/v2/pokemon';
 
-  int limit = 2;
+  int limit = 10;
   int offset = 0;
 
   Future<void> getPokemonsApi() async {
@@ -33,7 +33,7 @@ class PokeApi {
       final index = pokemons.indexOf(poke);
       final Map<String, dynamic> mapPoke = {
         "id" : poke.id, 
-        "abilities" : poke.abilities.map((ability) => ability.toJson()).toString(), 
+        "abilities" : poke.abilities.map((ability) => ability.toJson()).toList().toString(), 
         "game_indices" : poke.gameIndices.map((game) => game.toJson()).toList().toString(), 
         "height" : poke.height, 
         "name" : poke.name, 
@@ -46,7 +46,7 @@ class PokeApi {
       return PokemonLocal.fromMap(mapPoke);
     }).toList();
 
-    // DBPokedex.db.addPokemonsLocal(pokemonsLocal);
+    DBPokedex.db.addPokemonsLocal(pokemonsLocal);
   }
 
   Future<Uint8List> getImageLocal(String url) async {

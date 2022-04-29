@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex/api/poke_api.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:pokedex/models/pokemon_local.dart';
-import 'package:pokedex/services/pokemons_stream.dart';
+import 'package:pokedex/api/poke_api.dart';
 import 'package:pokedex/widgets/card_pokemon.dart';
+import 'package:pokedex/bloc/pokemon/pokemon_bloc.dart';
+
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -11,7 +12,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final poke = PokeApi();
-    final pokeStream = PokemonsStream();
     final size = MediaQuery.of(context).size;
     final _space = (size.height > 600) ? 0 : 6.5;
 
@@ -34,9 +34,7 @@ class HomePage extends StatelessWidget {
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)
-                        ),
+                        RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       ),
                     ),
                     child: const Text(
@@ -47,29 +45,28 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
-            StreamBuilder<List<PokemonLocal>>(
-              stream: pokeStream.streamPokemons.stream,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
+            BlocBuilder<PokemonBloc, PokemonState>(
+              builder: (context, state) {
+                final pokemons = state.pokemons;
+                
+                if (pokemons.isEmpty) {
                   return FutureBuilder<void>(
                     future: poke.getPokemonsApi(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return const Center(
-                          child: Text("cargando"),
+                          child: CircularProgressIndicator(color: Colors.red,),
                         );
                       }
                       return Container();
                     },
                   );
                 }
-                final pokemons = snapshot.data!;
-                
+
                 return Flexible(
                   child: GridView.count(
                     scrollDirection: Axis.vertical,
                     crossAxisCount: 2,
-
                     childAspectRatio: (size.width / (size.height - kToolbarHeight * _space * 0.5)),
                     crossAxisSpacing: 0,
                     children: pokemons.map((pokemon) {
@@ -86,7 +83,6 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
-        
       ),
     );
   }

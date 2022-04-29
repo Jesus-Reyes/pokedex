@@ -38,8 +38,7 @@ class DBPokedex {
         await db.execute('''
           CREATE TABLE PokemonFavorites(
             id INTEGER,
-            name TEXT,
-            img Uint8List
+            name TEXT
           )
           ''');
 
@@ -65,22 +64,26 @@ class DBPokedex {
   Future<int> addPokemonFavorite(PokemonFavorite pokemonFavorite) async {
     final db = await database;
     final res = await db.insert('PokemonFavorites', pokemonFavorite.toMap());
-    getAllFavorites();
+  
+    final list = await getAllFavorites();
+    pokeStreamFavorites.streamFavorites.add(list);
     return res;
   }
 
   Future<int> deletePokemonFavorite(int id) async {
     final db = await database;
     final res = await db.delete('PokemonFavorites', where: 'id = ?', whereArgs: [id]);
-    getAllFavorites();
+    final list = await getAllFavorites();
+    pokeStreamFavorites.streamFavorites.add(list);
     return res;
   }
 
-  Future<void> getAllFavorites() async {
+  Future<List<PokemonFavorite>> getAllFavorites() async {
     final db = await database;
     final res = await db.query('PokemonFavorites');
     final List<PokemonFavorite> list = res.isNotEmpty ? res.map((c) => PokemonFavorite.fromMap(c)).toList() : [];
-    pokeStreamFavorites.streamFavorites.add(list);
+    
+    return list;
   }
 
   // POkemons en carga local
@@ -88,19 +91,17 @@ class DBPokedex {
     final db = await database;
     await Future.wait(pokemons.map((pokemon) async => await db.insert('Pokemons', pokemon.toMap())));
     // Return  0||1
-    // getAllPokemonsLocal();
+    final pokemonsLocal = await getAllPokemonsLocal();
+    pokeStream.streamPokemons.add(pokemonsLocal);
   }
 
   Future<List<PokemonLocal>> getAllPokemonsLocal() async {
     final db = await database;
     final res = await db.query('Pokemons');
     final List<PokemonLocal> list = res.isNotEmpty
-        ? res.map((c) {
-            return PokemonLocal.fromMap(c);
-          }).toList()
+        ? res.map((c) => PokemonLocal.fromMap(c)).toList()
         : [];
 
-    // pokeStream.streamPokemons.add(list);
     return list;
   }
 }

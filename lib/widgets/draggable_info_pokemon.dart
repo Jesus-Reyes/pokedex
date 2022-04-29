@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pokedex/helpers/get_color_pokemon.dart';
 import 'package:pokedex/models/pokemon.dart';
+import 'package:pokedex/models/pokemon_local.dart';
 import 'package:pokedex/widgets/about_pokemon.dart';
 import 'package:pokedex/widgets/games_pokemon.dart';
 import 'package:pokedex/widgets/stats_pokemon.dart';
@@ -11,11 +14,28 @@ class DraggableInfoPokemon extends StatelessWidget {
     required this.currentPokemon,
   }) : super(key: key);
 
-  final Pokemon currentPokemon;
+  final PokemonLocal currentPokemon;
 
   @override
   Widget build(BuildContext context) {
-    final currentColor = getColorPokemon(currentPokemon.types[0].type.name);
+    final List<dynamic> dataTypes = jsonDecode(currentPokemon.types);
+    final types = dataTypes.map((e) => Type.fromMap(e)).toList();
+    final currentColor = getColorPokemon(types[0].type.name);
+
+    
+
+    final List<dynamic> dataStats  = jsonDecode(currentPokemon.stats);
+    final stats = dataStats.map((s) => Stat.fromMap(s)).toList();
+
+    final List<dynamic> dataGames  = jsonDecode(currentPokemon.gameIndices);
+    final games = dataGames.map((g) => GameIndex.fromMap(g)).toList();
+
+    final List<dynamic> dataAbilities  = jsonDecode(currentPokemon.abilities);
+    final abilities = dataAbilities.map((a) => AbilityElement.fromMap(a)).toList();
+ 
+
+   
+
     return Flexible(
       child: DraggableScrollableSheet(
         initialChildSize: 0.95,
@@ -58,7 +78,7 @@ class DraggableInfoPokemon extends StatelessWidget {
                     child: PageView(
                       children: [
                         AboutPokemon(
-                          abilities: currentPokemon.abilities.map((e) => e.ability.name).toList(),
+                          abilities: abilities.map((e) => e.ability.name).toList(),
                           height: currentPokemon.height,
                           weight: currentPokemon.weight,
                         )
@@ -70,8 +90,8 @@ class DraggableInfoPokemon extends StatelessWidget {
                     child: PageView(
                       children: [
                         StatsPokemon(
-                          baseStat: currentPokemon.stats.map((stat) => stat.baseStat).toList(),
-                          nameStat: currentPokemon.stats.map((stat) => stat.stat.name).toList(),
+                          baseStat: stats.map((stat) => stat.baseStat).toList(),
+                          nameStat: stats.map((stat) => stat.stat.name).toList(),
                         )
                       ],
                     ),
@@ -81,8 +101,8 @@ class DraggableInfoPokemon extends StatelessWidget {
                     child: PageView(
                       children: [
                         GamesPokemon(
-                          gameIndexs: currentPokemon.gameIndices.map((game) => game.gameIndex).toList(),
-                          gameNames: currentPokemon.gameIndices.map((game) => game.version.name).toList(),
+                          gameIndexs: games.map((game) => game.gameIndex).toList(),
+                          gameNames: games.map((game) => game.version.name).toList(),
                         ),
                       ],
                     ),

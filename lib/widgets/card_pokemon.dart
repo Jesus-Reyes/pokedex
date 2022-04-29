@@ -60,7 +60,7 @@ class CardPokemon extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  pokemon.types.length > 1 ? 
+                  types.length > 1 ? 
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
