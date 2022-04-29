@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokedex/bloc/pokemon/pokemon_bloc.dart';
 import 'package:pokedex/db/db_pokedex.dart';
 import 'package:pokedex/routes/index.dart';
-import 'package:pokedex/services/pokemons_favorites_stream.dart';
-import 'package:pokedex/services/pokemons_stream.dart';
+import 'package:pokedex/streams/pokemons_favorites_stream.dart';
+import 'package:pokedex/streams/pokemons_stream.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

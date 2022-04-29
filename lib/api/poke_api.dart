@@ -6,7 +6,7 @@ import 'package:pokedex/db/db_pokedex.dart';
 import 'package:pokedex/models/pokemon.dart';
 import 'package:pokedex/models/pokemon_list.dart';
 import 'package:pokedex/models/pokemon_local.dart';
-import 'package:pokedex/services/pokemons_stream.dart';
+import 'package:pokedex/streams/pokemons_stream.dart';
 
 class PokeApi {
   static final PokeApi _instance = PokeApi._internal();
@@ -18,9 +18,8 @@ class PokeApi {
   final baseUrl = 'https://pokeapi.co/api/v2/pokemon';
 
   int limit = 10;
-  int offset = 0;
 
-  Future<void> getPokemonsApi() async {
+  Future<void> getPokemonsApi(int offset) async {
     final response = await dio.get(baseUrl + '?limit=$limit&offset=$offset');
     final pokemonsList = PokemonList.fromMap(response.data);
 

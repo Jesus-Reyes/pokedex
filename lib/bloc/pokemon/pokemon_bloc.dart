@@ -18,7 +18,7 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
     pokemons.stream.listen(((event) => add(SetPokemonsEvent(event))));
     pokemonsFavorites.stream.listen(((event) => add(SetPokemonFavoritesEvent(event))));
 
-    on<SetPokemonsEvent>((event, emit) => emit(state.copyWith(pokemons: [...event.pokemons])));
+    on<SetPokemonsEvent>((event, emit) => emit(state.copyWith(pokemons: event.pokemons)));
     on<SetPokemonFavoritesEvent>((event, emit) => emit(state.copyWith(pokemonsFavorites: [...event.pokemonsFavorites])));
     // on<InitialDataEvent>((event, emit) => emit(state.copyWith(pokemons: event.initialData)));
   }

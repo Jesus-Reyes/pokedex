@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:pokedex/models/pokemon_favorite.dart';
 import 'package:pokedex/models/pokemon_local.dart';
-import 'package:pokedex/services/pokemons_favorites_stream.dart';
-import 'package:pokedex/services/pokemons_stream.dart';
+import 'package:pokedex/streams/pokemons_favorites_stream.dart';
+import 'package:pokedex/streams/pokemons_stream.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 

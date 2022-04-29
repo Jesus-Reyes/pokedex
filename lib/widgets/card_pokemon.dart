@@ -16,7 +16,6 @@ class CardPokemon extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final List<dynamic> dataTypes = jsonDecode(pokemon.types);
     final types = dataTypes.map((e) => Type.fromMap(e)).toList();
-    
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
@@ -33,14 +32,16 @@ class CardPokemon extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Hero(
-                
                 tag: pokemon.name,
                 child: SvgPicture.memory(
                   pokemon.imgLocal,
                   semanticsLabel: pokemon.name,
                   fit: BoxFit.cover,
-                  height: size.height * 0.15,
-                  placeholderBuilder: (_) => const Image(image: AssetImage("assets/jar-loading.gif")),
+                  height: size.height * 0.13,
+                  placeholderBuilder: (_) => Image(
+                    height: size.height * 0.1,
+                    image: const AssetImage("assets/jar-loading.gif"),
+                  ),
                 ),
               ),
               Text(
@@ -60,15 +61,16 @@ class CardPokemon extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  types.length > 1 ? 
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                    decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
-                    child: Text(
-                      types[1].type.name ,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ): Container(),
+                  types.length > 1
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                          decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
+                          child: Text(
+                            types[1].type.name,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        )
+                      : Container(),
                 ],
               ),
             ],
