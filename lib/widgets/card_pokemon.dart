@@ -1,21 +1,27 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pokedex/helpers/getColorPokemon.dart';
 import 'package:pokedex/models/pokemon.dart';
+import 'package:pokedex/models/pokemon_local.dart';
+import 'package:pokedex/helpers/get_color_pokemon.dart';
 
 class CardPokemon extends StatelessWidget {
   const CardPokemon({Key? key, required this.pokemon}) : super(key: key);
 
-  final Pokemon pokemon;
+  final PokemonLocal pokemon;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final List<dynamic> dataTypes = jsonDecode(pokemon.types);
+    final types = dataTypes.map((e) => Type.fromMap(e)).toList();
+    
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       child: Card(
-        color: getColorPokemon(pokemon.types[0].type.name),
+        color: getColorPokemon(types[0].type.name),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
         ),
@@ -29,14 +35,8 @@ class CardPokemon extends StatelessWidget {
               Hero(
                 
                 tag: pokemon.name,
-                // child: FadeInImage(
-                //   width: size.width * 0.3,
-                //   fit: BoxFit.cover,
-                //   placeholder: const AssetImage("assets/jar-loading.gif"),
-                //   image: NetworkImage(pokemon.sprites.frontDefault),
-                // ),
-                child: SvgPicture.network(
-                  pokemon.sprites.other.dreamWorld.frontDefault,
+                child: SvgPicture.memory(
+                  pokemon.imgLocal,
                   semanticsLabel: pokemon.name,
                   fit: BoxFit.cover,
                   height: size.height * 0.15,
@@ -55,7 +55,7 @@ class CardPokemon extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
                     child: Text(
-                      pokemon.types[0].type.name,
+                      types[0].type.name,
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
@@ -65,7 +65,7 @@ class CardPokemon extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
                     child: Text(
-                      pokemon.types[1].type.name ,
+                      types[1].type.name ,
                       style: const TextStyle(color: Colors.white),
                     ),
                   ): Container(),

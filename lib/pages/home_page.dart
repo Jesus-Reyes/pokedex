@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex/api/poke_api.dart';
-import 'package:pokedex/models/pokemon.dart';
+
+import 'package:pokedex/models/pokemon_local.dart';
 import 'package:pokedex/services/pokemons_stream.dart';
 import 'package:pokedex/widgets/card_pokemon.dart';
 
@@ -46,30 +47,26 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
-            StreamBuilder<List<Pokemon>>(
+            StreamBuilder<List<PokemonLocal>>(
               stream: pokeStream.streamPokemons.stream,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return FutureBuilder<List<Pokemon>>(
-                    future: poke.getPokemons(),
+                  return FutureBuilder<void>(
+                    future: poke.getPokemonsApi(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.red,
-                          ),
+                          child: Text("cargando"),
                         );
                       }
-                      final pokemons = snapshot.data!;
-                      pokeStream.streamPokemons.add(pokemons);
                       return Container();
                     },
                   );
                 }
                 final pokemons = snapshot.data!;
+                
                 return Flexible(
                   child: GridView.count(
-                    // itemCount: pokemonsList.results.length,
                     scrollDirection: Axis.vertical,
                     crossAxisCount: 2,
 

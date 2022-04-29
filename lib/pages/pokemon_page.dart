@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:pokedex/db/db_pokedex.dart';
-import 'package:pokedex/helpers/getColorPokemon.dart';
+import 'package:pokedex/helpers/get_color_pokemon.dart';
 import 'package:pokedex/models/pokemon.dart';
 import 'package:pokedex/models/pokemon_favorite.dart';
+import 'package:pokedex/models/pokemon_local.dart';
 import 'package:pokedex/services/pokemons_stream.dart';
 import 'package:pokedex/widgets/draggable_info_pokemon.dart';
 
@@ -25,7 +26,7 @@ class PokemonPage extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
-          StreamBuilder<List<Pokemon>>(
+          StreamBuilder<List<PokemonLocal>>(
             stream: pokeStream.streamPokemons.stream,
             builder: (context, snapshot) {
               if (!snapshot.hasData) {

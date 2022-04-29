@@ -4,7 +4,8 @@ import 'package:pokedex/routes/index.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DBPokedex.db.getAllFavorites();
+  //inicializar State
+  final pokemonsLocal = await DBPokedex.db.getAllPokemonsLocal();
   
   runApp(const MyApp());
 }

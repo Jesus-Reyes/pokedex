@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex/db/db_pokedex.dart';
-import 'package:pokedex/models/pokemon.dart';
-import 'package:pokedex/services/pokemons_stream.dart';
+import 'package:pokedex/models/pokemon_favorite.dart';
+import 'package:pokedex/services/pokemons_favorites_stream.dart';
 import 'package:pokedex/widgets/card_pokemon_favorite.dart';
 
 class FavoritesPage extends StatelessWidget {
@@ -9,7 +9,7 @@ class FavoritesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pokeStream = PokemonsStream();
+    final favoritesStream = PokemonsFavoritesStream();
     final size = MediaQuery.of(context).size;
     final _space = (size.height > 600) ? 2 : 4;
     return Scaffold(
@@ -21,8 +21,8 @@ class FavoritesPage extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
       ),
-      body: StreamBuilder<List<Pokemon>>(
-        stream: pokeStream.streamPokemons.stream,
+      body: StreamBuilder<List<PokemonFavorite>>(
+        stream: favoritesStream.streamFavorites.stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return FutureBuilder<void>(
@@ -46,6 +46,7 @@ class FavoritesPage extends StatelessWidget {
             crossAxisCount: 3,
             crossAxisSpacing: 0,
             childAspectRatio: (size.width / (size.height - kToolbarHeight * _space * 0.5)),
+
             children: favoritesList.map((poke) => CardPokemonFavorite(pokemon: poke)).toList(),
           );
         },

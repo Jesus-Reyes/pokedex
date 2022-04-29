@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:pokedex/models/pokemon_favorite.dart';
+import 'package:pokedex/models/pokemon_local.dart';
+import 'package:pokedex/services/pokemons_favorites_stream.dart';
 import 'package:pokedex/services/pokemons_stream.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,6 +15,7 @@ class DBPokedex {
   DBPokedex._();
 
   final pokeStream = PokemonsStream();
+  final pokeStreamFavorites = PokemonsFavoritesStream();
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -39,10 +42,26 @@ class DBPokedex {
             img Uint8List
           )
           ''');
+
+        await db.execute('''
+          CREATE TABLE Pokemons(
+            id INTEGER,
+            abilities TEXT,
+            game_indices TEXT,
+            height INTEGER,
+            name TEXT,
+            sprites TEXT,
+            stats TEXT,
+            types TEXT,
+            weight INTEGER,
+            img_local Uint8List
+          )
+          ''');
       },
     );
   }
 
+  //Favoritos
   Future<int> addPokemonFavorite(PokemonFavorite pokemonFavorite) async {
     final db = await database;
     final res = await db.insert('PokemonFavorites', pokemonFavorite.toMap());
@@ -61,6 +80,27 @@ class DBPokedex {
     final db = await database;
     final res = await db.query('PokemonFavorites');
     final List<PokemonFavorite> list = res.isNotEmpty ? res.map((c) => PokemonFavorite.fromMap(c)).toList() : [];
-    pokemonsFavorites.streamFavorites.add(list);
+    pokeStreamFavorites.streamFavorites.add(list);
+  }
+
+  // POkemons en carga local
+  Future<void> addPokemonsLocal(List<PokemonLocal> pokemons) async {
+    final db = await database;
+    await Future.wait(pokemons.map((pokemon) async => await db.insert('Pokemons', pokemon.toMap())));
+    // Return  0||1
+    // getAllPokemonsLocal();
+  }
+
+  Future<List<PokemonLocal>> getAllPokemonsLocal() async {
+    final db = await database;
+    final res = await db.query('Pokemons');
+    final List<PokemonLocal> list = res.isNotEmpty
+        ? res.map((c) {
+            return PokemonLocal.fromMap(c);
+          }).toList()
+        : [];
+
+    // pokeStream.streamPokemons.add(list);
+    return list;
   }
 }

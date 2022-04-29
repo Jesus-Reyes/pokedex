@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex/helpers/getColorPokemon.dart';
+import 'package:pokedex/helpers/get_color_pokemon.dart';
 import 'package:pokedex/models/pokemon.dart';
 import 'package:pokedex/widgets/about_pokemon.dart';
 import 'package:pokedex/widgets/games_pokemon.dart';

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:pokedex/models/pokemon.dart';
+import 'package:pokedex/models/pokemon_local.dart';
 
 class PokemonsStream {
   static final PokemonsStream _instance = PokemonsStream._internal();
@@ -11,8 +11,8 @@ class PokemonsStream {
   final baseUrl = 'https://pokeapi.co/api/v2/pokemon';
   final dio = Dio();
 
-  final StreamController<List<Pokemon>>  _pokemonsList = StreamController<List<Pokemon>> .broadcast();
+  final StreamController<List<PokemonLocal>>  _pokemonsList = StreamController<List<PokemonLocal>> .broadcast();
 
-  StreamController<List<Pokemon>>  get streamPokemons => _pokemonsList;
+  StreamController<List<PokemonLocal>>  get streamPokemons => _pokemonsList;
 
 }
