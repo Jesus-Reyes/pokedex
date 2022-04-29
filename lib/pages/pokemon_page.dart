@@ -10,7 +10,7 @@ import 'package:pokedex/helpers/get_color_pokemon.dart';
 import 'package:pokedex/models/pokemon.dart';
 import 'package:pokedex/models/pokemon_favorite.dart';
 import 'package:pokedex/models/pokemon_local.dart';
-import 'package:pokedex/widgets/draggable_info_pokemon.dart';
+import 'package:pokedex/widgets/ui/draggable_info_pokemon.dart';
 
 class PokemonPage extends StatelessWidget {
   const PokemonPage({Key? key}) : super(key: key);
@@ -22,7 +22,6 @@ class PokemonPage extends StatelessWidget {
 
     final List<dynamic> dataTypes = jsonDecode(currentPokemon.types);
     final types = dataTypes.map((e) => Type.fromMap(e)).toList();
-    
 
     return Scaffold(
       backgroundColor: getColorPokemon(types[0].type.name),
@@ -56,7 +55,6 @@ class PokemonPage extends StatelessWidget {
         ],
       ),
       body: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -64,17 +62,13 @@ class PokemonPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  currentPokemon.name,
-                  style: TextStyle(color: Colors.white, fontSize: size.height * 0.062, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  "# ${currentPokemon.id}",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: size.height * 0.05,
+                Flexible(
+                  child: Text(
+                    currentPokemon.name,
+                    style: TextStyle(color: Colors.white, fontSize: size.height * 0.062, fontWeight: FontWeight.bold),
                   ),
                 ),
+                Text("# ${currentPokemon.id}", style: TextStyle(color: Colors.white, fontSize: size.height * 0.05)),
               ],
             ),
           ),
@@ -87,22 +81,17 @@ class PokemonPage extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                   decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
-                  child: Text(
-                    types[0].type.name,
-                    style: const TextStyle(color: Colors.white),
-                  ),
+                  child: Text(types[0].type.name, style: const TextStyle(color: Colors.white)),
                 ),
                 const SizedBox(width: 10),
-                types.length > 1
-                    ? Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                        decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
-                        child: Text(
-                          types[1].type.name,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      )
-                    : Container(),
+                if (types.length > 1)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
+                    child: Text(types[1].type.name, style: const TextStyle(color: Colors.white)),
+                  )
+                else
+                  Container(),
               ],
             ),
           ),
@@ -110,16 +99,29 @@ class PokemonPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Hero(
-                tag: currentPokemon.name,
-                child: SvgPicture.memory(
-                  currentPokemon.imgLocal,
-                  semanticsLabel: currentPokemon.name,
-                  fit: BoxFit.cover,
-                  height: size.height * 0.25,
-                  // placeholderBuilder: (_) => const Image(image: AssetImage("assets/jar-loading.gif")),
+              if (currentPokemon.id <= 649)
+                Hero(
+                  tag: currentPokemon.name,
+                  child: SvgPicture.memory(
+                    currentPokemon.imgLocal,
+                    semanticsLabel: currentPokemon.name,
+                    fit: BoxFit.cover,
+                    height: size.height * 0.13,
+                    placeholderBuilder: (_) => Image(
+                      height: size.height * 0.1,
+                      image: const AssetImage("assets/jar-loading.gif"),
+                    ),
+                  ),
+                )
+              else
+                Hero(
+                  tag: currentPokemon.name,
+                  child: Image.memory(
+                    currentPokemon.imgLocal,
+                    fit: BoxFit.cover,
+                    height: size.height * 0.13,
+                  ),
                 ),
-              ),
             ],
           ),
           DraggableInfoPokemon(currentPokemon: currentPokemon)

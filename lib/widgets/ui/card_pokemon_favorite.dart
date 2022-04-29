@@ -15,7 +15,6 @@ class CardPokemonFavorite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
@@ -28,15 +27,25 @@ class CardPokemonFavorite extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SvgPicture.memory(
-                  img,
-                  width: size.width * 0.1,
-                  height: size.height * 0.12,
-                  fit: BoxFit.cover,
-                ),
-              ),
+              (pokemon.id <= 649)
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SvgPicture.memory(
+                        img,
+                        width: size.width * 0.1,
+                        height: size.height * 0.12,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.memory(
+                        img,
+                        width: size.width * 0.1,
+                        height: size.height * 0.12,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
               Text(
                 pokemon.name[0].toUpperCase() + pokemon.name.substring(1).toLowerCase(),
                 style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),

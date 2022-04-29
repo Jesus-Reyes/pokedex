@@ -252,7 +252,7 @@ class DreamWorld {
     required this.frontFemale,
   });
 
-  final String frontDefault;
+  final String? frontDefault;
   final dynamic frontFemale;
 
   DreamWorld copyWith({

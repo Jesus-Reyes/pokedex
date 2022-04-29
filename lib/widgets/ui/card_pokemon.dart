@@ -31,19 +31,29 @@ class CardPokemon extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Hero(
-                tag: pokemon.name,
-                child: SvgPicture.memory(
-                  pokemon.imgLocal,
-                  semanticsLabel: pokemon.name,
-                  fit: BoxFit.cover,
-                  height: size.height * 0.13,
-                  placeholderBuilder: (_) => Image(
-                    height: size.height * 0.1,
-                    image: const AssetImage("assets/jar-loading.gif"),
-                  ),
-                ),
-              ),
+              pokemon.id <= 649
+                  ? Hero(
+                      tag: pokemon.name,
+                      child: SvgPicture.memory(
+                        pokemon.imgLocal,
+                        semanticsLabel: pokemon.name,
+                        fit: BoxFit.cover,
+                        height: size.height * 0.13,
+                        placeholderBuilder: (_) => Image(
+                          height: size.height * 0.1,
+                          image: const AssetImage("assets/jar-loading.gif"),
+                        ),
+                      ),
+                    )
+                  : Hero(
+                      tag: pokemon.name,
+                      child: Image.memory(
+                        pokemon.imgLocal,
+                        fit: BoxFit.cover,
+                        height: size.height * 0.13,
+                      ),
+                      
+                    ),
               Text(
                 pokemon.name[0].toUpperCase() + pokemon.name.substring(1).toLowerCase(),
                 style: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),

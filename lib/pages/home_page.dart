@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:pokedex/api/poke_api.dart';
-import 'package:pokedex/widgets/card_pokemon.dart';
+import 'package:pokedex/widgets/ui/alert_action.dart';
+import 'package:pokedex/widgets/ui/card_pokemon.dart';
 import 'package:pokedex/bloc/pokemon/pokemon_bloc.dart';
 import 'package:pokedex/widgets/ui/loading_icon.dart';
 
@@ -15,41 +16,68 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final poke = PokeApi();
-  final isloading = ValueNotifier(false);
-  int max = 0;
-
   final ScrollController _scrollController = ScrollController();
+  final isloading = ValueNotifier(false);
+  final indexBloque = ValueNotifier(0);
+
+  int min = 0;
+  int max = 0;
+  int endBloque = 0;
 
   @override
   void initState() {
     super.initState();
-
     _scrollController.addListener(() {
-      if ((_scrollController.position.pixels ) >= _scrollController.position.maxScrollExtent +100) {
-        //Cargar nueva data
-        print("MaxExtent ${_scrollController.position.maxScrollExtent +100}");
-        print("Curren Pixels ${_scrollController.position.pixels}");
-        print("Agregar nuevos pokemons");
-
-        // addPokemons();
+      if ((_scrollController.position.pixels) >= _scrollController.position.maxScrollExtent + 100) {
+        indexBloque.value + 1 >= endBloque ? addPokemons() : nextPokemons();
       }
     });
   }
 
   Future<void> addPokemons() async {
-    print("AD Pokemon (loading): ${isloading.value}");
     if (isloading.value) return;
     isloading.value = true;
-    // await Future.delayed(const Duration(seconds: 3));
-    await poke.getPokemonsApi(max);
+    final success = await poke.getPokemonsApi(max);
+    if (!success) {
+      Future.delayed(
+        Duration.zero,
+        () => showDialog(
+          context: context,
+          builder: (_) {
+            Future.delayed(const Duration(seconds: 2), () => Navigator.of(context).pop());
+            return const AlertAction(
+              message: "Checa tu conexion a Internet",
+              status: false,
+            );
+          },
+        ),
+      );
+    } else {
+      indexBloque.value++;
+    }
     isloading.value = false;
-    // if (_scrollController.position.pixels + 300 <= _scrollController.position.maxScrollExtent) return;
+  }
+
+  Future<void> nextPokemons() async {
+    if (isloading.value) return;
+    isloading.value = true;
+    await Future.delayed(const Duration(milliseconds: 1500));
+    isloading.value = false;
+    indexBloque.value++;
+    _scrollController.animateTo(0, duration: const Duration(milliseconds: 400), curve: Curves.fastOutSlowIn);
+  }
+
+  Future<void> backPokemons() async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+    if (indexBloque.value > 0) {
+      indexBloque.value--;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final _space = (size.height > 600) ? 0 : 6.5;
+    final _space = (size.height > 600) ? 8 : 6.5;
 
     return SafeArea(
       child: Scaffold(
@@ -65,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                   ElevatedButton(
                     onPressed: () => Navigator.pushNamed(context, 'favorites'),
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade300),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       ),
@@ -78,64 +106,94 @@ class _HomePageState extends State<HomePage> {
             BlocBuilder<PokemonBloc, PokemonState>(
               builder: (context, state) {
                 isloading.value = false;
-                final pokemons = state.pokemons;
-                final min = state.pokemons.length - poke.limit + 1;
-                max = state.pokemons.length;
+                final totalPokemons = state.pokemons;
+                endBloque = totalPokemons.length ~/ poke.limit;
 
-                if (pokemons.isEmpty) {
-                  return FutureBuilder<void>(
-                    future: poke.getPokemonsApi(max),
+                if (totalPokemons.isEmpty) {
+                  return FutureBuilder<bool>(
+                    future: poke.getPokemonsApi(state.pokemons.length),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return const Center(child: LoadingIcon());
+                      }
+                      final status = snapshot.data!;
+                      if (!status) {
+                        Future.delayed(
+                          Duration.zero,
+                          () {
+                            Future.delayed(const Duration(seconds: 2), () => Navigator.of(context).pop());
+                            return showDialog(
+                              context: context,
+                              builder: (_) => const AlertAction(
+                                message: "Checa tu conexion a Internet",
+                                status: false,
+                              ),
+                            );
+                          },
+                        );
                       }
                       return Container();
                     },
                   );
                 }
 
-                return Flexible(
-                  child: Stack(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                return ValueListenableBuilder<int>(
+                  valueListenable: indexBloque,
+                  builder: (context, indexValue, child) {
+                    min = indexValue * poke.limit;
+                    max = indexValue * poke.limit + poke.limit;
+                    final blockPokemons = totalPokemons.skip(min).take(poke.limit);
+
+                    return Flexible(
+                      child: Stack(
                         children: [
-                          Text("Pokemons: $min - $max", style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text("Bloque:${indexValue + 1} ", style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
+                              Text("Pokemons: ${min + 1} - $max", style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
+                              Text("Poke Local: ${totalPokemons.length}", style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: RefreshIndicator(
+                              color: Colors.red,
+                              onRefresh: backPokemons,
+                              child: GridView.count(
+                                controller: _scrollController,
+                                physics: const BouncingScrollPhysics(),
+                                scrollDirection: Axis.vertical,
+                                crossAxisCount: 2,
+                                childAspectRatio: (size.width / (size.height - kToolbarHeight * _space * 0.5)),
+                                crossAxisSpacing: 0,
+                                children: blockPokemons.map((pokemon) {
+                                  return GestureDetector(
+                                    onTap: () => Navigator.pushNamed(context, 'pokemon', arguments: pokemon),
+                                    child: CardPokemon(pokemon: pokemon),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                          ValueListenableBuilder<bool>(
+                            valueListenable: isloading,
+                            child: const LoadingIcon(),
+                            builder: (context, loadingValue, child) {
+                              if (loadingValue) {
+                                return Positioned(
+                                  bottom: 40,
+                                  left: size.width * 0.5 - 30,
+                                  child: child!,
+                                );
+                              }
+                              return Container();
+                            },
+                          ),
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: GridView.count(
-                          controller: _scrollController,
-                          physics: const BouncingScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          crossAxisCount: 2,
-                          childAspectRatio: (size.width / (size.height - kToolbarHeight * _space * 0.5)),
-                          crossAxisSpacing: 0,
-                          children: pokemons.map((pokemon) {
-                            return GestureDetector(
-                              onTap: () => Navigator.pushNamed(context, 'pokemon', arguments: pokemon),
-                              child: CardPokemon(pokemon: pokemon),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      ValueListenableBuilder<bool>(
-                        valueListenable: isloading,
-                        child: const LoadingIcon(),
-                        builder: (context, loadingValue, child) {
-                          if (loadingValue) {
-                            return Positioned(
-                              bottom: 40,
-                              left: size.width * 0.5 - 30,
-                              child: child!,
-                            );
-                          }
-                          return Container();
-                        },
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 );
               },
             ),
